@@ -2,52 +2,65 @@ const chatForm=document.getElementById('chat-form')
 const chatMessages= document.querySelector('.chat-messages');
 const roomName=document.getElementById('room-name');
 const userList=document.getElementById('users')
-//get user name and room from URL
+
+//12.get user name and room from URL
 const {username,room}=Qs.parse(location.search,{
+    //ignore ? and = and /
     ignoreQueryPrefix:true
 });
 
 const socket=io();
-//join chat rom 
+
+//13. join chat room come from url {username,room} 
 socket.emit('joinRoom',{username,room});
-//get room and users 
+
+//24.get room and users 
 socket.on('roomUsers',({room,users})=>{
     outputRoomName(room);
     outputUsers(users);
 })
-//message from server
+
+//3./9./message from server//(message) its object return from formatMessage function 
 socket.on('message',message=>{
     console.log(message);
+    //10.1
     outputMessage(message);
-    //scroll down 
+    //10.3 scroll down from chat messages
     chatMessages.scrollTop=chatMessages.scrollHeight;
 });
-//Message submit
+
+//6.1 Message submit
 chatForm.addEventListener('submit',(e)=>{
 e.preventDefault();
-//get message text
+//6.2 get message textfrom text input(acess element in form chat)
 const msg=e.target.elements.msg.value;
-//Emit message to server
+//7.1 Emit message to server
 socket.emit('chatMessage',msg);
-//clear input
+//7.2 clear input
 e.target.elements.msg.value='';
+//focus in empty input مؤشر الكتابة 
 e.target.elements.msg.focus();
 });
-//output message to dom
+
+
+//10.2 output message to dom//(message) its object return from formatMessage function
 function outputMessage(message){
     const div=document.createElement('div');
     div.classList.add('message');
-    div.innerHTML =`	<p class="meta">${message.username}<span>${message.time}</span></p>
+    div.innerHTML =`<p class="meta">${message.username}<span>${message.time}</span></p>
     <p class="text">
         ${message.text}
     </p>`;
+    //put it in dom class name from chat html<div class="chat-messages">
     document.querySelector('.chat-messages').appendChild(div);
 }
-///add room name to dom
+
+///25.add room name to dom
 function outputRoomName(room){
 roomName.innerText=room;
-}7
-//add user to dom
+}
+
+//26.add user to dom
 function outputUsers(users){
     userList.innerHTML=`
     ${users.map(user=>`<li>${user.username}</li>`).join('')}
